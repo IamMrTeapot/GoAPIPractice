@@ -1,7 +1,11 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 // Book struct to hold book data
@@ -14,6 +18,11 @@ type Book struct {
 var books []Book // Slice to store books
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	app := fiber.New()
 
 	// Initialize in-memory data
@@ -29,7 +38,12 @@ func main() {
 
 	app.Post("/upload", uploadFile)
 
-	app.Listen(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	app.Listen(":" + port)
 }
 
 func uploadFile(c *fiber.Ctx) error {
